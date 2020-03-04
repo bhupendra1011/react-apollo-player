@@ -1,8 +1,8 @@
 import React from "react";
-import Header from "./Header";
-import AddSong from "./AddSong";
-import SongList from "./SongList";
-import SongPlayer from "./SongPlayer";
+import Header from "./components/Header";
+import AddSong from "./components/AddSong";
+import SongList from "./components/SongList";
+import SongPlayer from "./components/SongPlayer";
 import { Grid } from "@material-ui/core";
 
 function App() {
