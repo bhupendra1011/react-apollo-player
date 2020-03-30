@@ -1,5 +1,11 @@
 import React from "react";
-import { Typography, Avatar, IconButton, makeStyles } from "@material-ui/core";
+import {
+  Typography,
+  Avatar,
+  IconButton,
+  makeStyles,
+  useMediaQuery
+} from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
@@ -19,6 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 function QueuedSongList() {
+  const greatherThanMedium = useMediaQuery(theme => theme.breakpoints.up("md"));
   const song = {
     title: "kabira",
     artist: "Kiani Usman",
@@ -28,14 +35,16 @@ function QueuedSongList() {
   };
 
   return (
-    <div style={{ margin: "10px 0" }}>
-      <Typography variant="button" color="textSecondary">
-        Queue(5)
-      </Typography>
-      {Array.from({ length: 5 }, () => song).map((song, index) => (
-        <QueuedSong key={index} song={song} />
-      ))}
-    </div>
+    greatherThanMedium && (
+      <div style={{ margin: "10px 0" }}>
+        <Typography variant="button" color="textSecondary">
+          Queue(5)
+        </Typography>
+        {Array.from({ length: 5 }, () => song).map((song, index) => (
+          <QueuedSong key={index} song={song} />
+        ))}
+      </div>
+    )
   );
 }
 
