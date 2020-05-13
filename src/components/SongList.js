@@ -7,40 +7,34 @@ import {
   Typography,
   CardActions,
   IconButton,
-  makeStyles
+  makeStyles,
 } from "@material-ui/core";
 import { PlayArrow, Save } from "@material-ui/icons";
+import { useQuery } from "@apollo/react-hooks";
+import { GET_SONGS } from "../graphql/queries";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
-    margin: theme.spacing(3)
+    margin: theme.spacing(3),
   },
   songInfoContainer: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   songInfo: {
     width: "100%",
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   thumbnail: {
     objectFit: "cover",
     width: 140,
-    height: 140
-  }
+    height: 140,
+  },
 }));
 
 function SongList() {
-  let loading = false;
-  // dummy song data
-  const song = {
-    title: "kabira",
-    artist: "Kiani Usman",
-    thumbnail:
-      "https://i1.sndcdn.com/artworks-000056475023-059bpr-t500x500.jpg",
-    url: "https://soundcloud.com/kiani-usman-jarry/kabira"
-  };
+  const { data, loading, error } = useQuery(GET_SONGS);
 
   if (loading) {
     return (
@@ -49,17 +43,18 @@ function SongList() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginTop: 50
+          marginTop: 50,
         }}
       >
         <CircularProgress />
       </div>
     );
   }
+  if (error) return <div>Error fetching songs...</div>;
   return (
     <div>
-      {Array.from({ length: 10 }, () => song).map((song, index) => (
-        <Song key={index} song={song} />
+      {data.songs.map((song) => (
+        <Song key={song.id} song={song} />
       ))}
     </div>
   );

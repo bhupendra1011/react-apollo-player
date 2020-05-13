@@ -6,8 +6,12 @@ import SongPlayer from "./components/SongPlayer";
 import { Grid, useMediaQuery, Hidden } from "@material-ui/core";
 
 function App() {
-  const greatherThanMedium = useMediaQuery(theme => theme.breakpoints.up("md"));
-  const greatherThanSmall = useMediaQuery(theme => theme.breakpoints.up("sm"));
+  const greatherThanMedium = useMediaQuery((theme) =>
+    theme.breakpoints.up("md")
+  );
+  const greatherThanSmall = useMediaQuery((theme) =>
+    theme.breakpoints.up("sm")
+  );
   return (
     <>
       <Hidden only="xs">
@@ -31,7 +35,7 @@ function App() {
                   position: "fixed",
                   width: "100%",
                   left: "0",
-                  bottom: "0"
+                  bottom: "0",
                 }
           }
           item
