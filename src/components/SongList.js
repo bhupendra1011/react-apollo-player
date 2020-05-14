@@ -9,10 +9,10 @@ import {
   IconButton,
   makeStyles,
 } from "@material-ui/core";
-import { PlayArrow, Save } from "@material-ui/icons";
+import { PlayArrow, Save, Pause } from "@material-ui/icons";
 import { useSubscription } from "@apollo/react-hooks";
 import { GET_SONGS } from "../graphql/subscriptions";
-
+import { SongContext } from "../App";
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(3),
@@ -61,8 +61,23 @@ function SongList() {
 }
 
 function Song({ song }) {
+  const { id } = song;
   const classes = useStyles();
+  const { state, dispatch } = React.useContext(SongContext);
   const { title, thumbnail, artist } = song;
+  const [currentSongPlaying, setCurrentSongPlaying] = React.useState(false);
+  React.useEffect(() => {
+    const isSongPlaying = state.isPlaying && id === state.song.id;
+    setCurrentSongPlaying(isSongPlaying);
+  }, [id, state.song.id, state.isPlaying]);
+
+  function handleTogglePlay() {
+    dispatch({ type: "SET_SONG", payload: { song } });
+    dispatch(
+      currentSongPlaying ? { type: "PAUSE_SONG" } : { type: "PLAY_SONG" }
+    );
+  }
+
   return (
     <Card className={classes.container}>
       <div className={classes.songInfoContainer}>
@@ -82,8 +97,8 @@ function Song({ song }) {
             </Typography>
           </CardContent>
           <CardActions>
-            <IconButton size="small" color="primary">
-              <PlayArrow />
+            <IconButton size="small" color="primary" onClick={handleTogglePlay}>
+              {currentSongPlaying ? <Pause /> : <PlayArrow />}
             </IconButton>
             <IconButton size="small" color="secondary">
               <Save />
