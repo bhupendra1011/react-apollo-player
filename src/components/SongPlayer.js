@@ -14,6 +14,8 @@ import { SongContext } from "../App";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_QUEUED_SONGS } from "../graphql/queries";
 
+import ReactPlayer from "react-player";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -43,11 +45,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 function SongPlayer() {
   const { data } = useQuery(GET_QUEUED_SONGS);
+  const [played, setPlayed] = React.useState(0);
+  const [seeking, setSeeking] = React.useState(false);
+  const [playedSeconds, setPlayedSeconds] = React.useState(0);
   const { state, dispatch } = React.useContext(SongContext);
   const classes = useStyles();
 
+  const reactPlayerRef = React.useRef();
+
   function handleTogglePlay() {
     dispatch(state.isPlaying ? { type: "PAUSE_SONG" } : { type: "PLAY_SONG" });
+  }
+
+  function handleProgressChange(e, newValue) {
+    setPlayed(newValue);
+  }
+  function handleSeekingStart() {
+    setSeeking(true);
+  }
+  function handleSeekingEnd() {
+    setSeeking(false);
+    reactPlayerRef.current.seekTo(played);
+  }
+  function formatDuration(seconds) {
+    return new Date(seconds * 1000).toISOString().substr(11, 8);
   }
   return (
     <>
@@ -76,11 +97,33 @@ function SongPlayer() {
               <SkipNext></SkipNext>
             </IconButton>
             <Typography variant="subtitle1" color="textSecondary" component="p">
-              00:01:30
+              {formatDuration(playedSeconds)}
             </Typography>
           </div>
-          <Slider type="range" min={0} max={1} step={0.1} />
+          <Slider
+            onMouseDown={handleSeekingStart}
+            onMouseUp={handleSeekingEnd}
+            onChange={handleProgressChange}
+            value={played}
+            type="range"
+            min={0}
+            max={1}
+            step={0.1}
+          />
         </div>
+        <ReactPlayer
+          ref={reactPlayerRef}
+          onProgress={({ played, playedSeconds }) => {
+            // dont progress while seeking song
+            if (!seeking) {
+              setPlayed(played);
+              setPlayedSeconds(playedSeconds);
+            }
+          }}
+          url={state.song.url}
+          playing={state.isPlaying}
+          hidden
+        />
         <CardMedia className={classes.thumbnail} image={state.song.thumbnail} />
       </Card>
       <QueuedSongList queue={data.queue} />
