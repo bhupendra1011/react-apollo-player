@@ -49,9 +49,37 @@ function SongPlayer() {
   const [seeking, setSeeking] = React.useState(false);
   const [playedSeconds, setPlayedSeconds] = React.useState(0);
   const { state, dispatch } = React.useContext(SongContext);
+  const [positionInQueue, setPositionInQueue] = React.useState(0);
   const classes = useStyles();
 
   const reactPlayerRef = React.useRef();
+
+  React.useEffect(() => {
+    const songIndex = data.queue.findIndex((song) => song.id === state.song.id);
+    setPositionInQueue(songIndex);
+  }, [data.queue, state.song.id]);
+
+  React.useEffect(() => {
+    const nextSong = data.queue[positionInQueue + 1];
+    if (played >= 0.999 && nextSong) {
+      setPlayed(0);
+      dispatch({ type: "SET_SONG", payload: { song: nextSong } });
+    }
+  }, [data.queue, played, positionInQueue, dispatch]);
+
+  function handlePlayNextSong() {
+    const nextSong = data.queue[positionInQueue + 1];
+    if (nextSong) {
+      dispatch({ type: "SET_SONG", payload: { song: nextSong } });
+    }
+  }
+
+  function handlePlayPreviousSong() {
+    const prevSong = data.queue[positionInQueue - 1];
+    if (prevSong) {
+      dispatch({ type: "SET_SONG", payload: { song: prevSong } });
+    }
+  }
 
   function handleTogglePlay() {
     dispatch(state.isPlaying ? { type: "PAUSE_SONG" } : { type: "PLAY_SONG" });
@@ -83,7 +111,7 @@ function SongPlayer() {
             </Typography>
           </CardContent>
           <div className={classes.controls}>
-            <IconButton>
+            <IconButton onClick={handlePlayPreviousSong}>
               <SkipPrevious></SkipPrevious>
             </IconButton>
             <IconButton onClick={handleTogglePlay}>
@@ -93,7 +121,7 @@ function SongPlayer() {
                 <PlayArrow className={classes.playIcon}></PlayArrow>
               )}
             </IconButton>
-            <IconButton>
+            <IconButton onClick={handlePlayNextSong}>
               <SkipNext></SkipNext>
             </IconButton>
             <Typography variant="subtitle1" color="textSecondary" component="p">
@@ -108,7 +136,7 @@ function SongPlayer() {
             type="range"
             min={0}
             max={1}
-            step={0.1}
+            step={0.01}
           />
         </div>
         <ReactPlayer
