@@ -4,11 +4,13 @@ import {
   Avatar,
   IconButton,
   makeStyles,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
+import { useMutation } from "@apollo/react-hooks";
+import { ADD_OR_REMOVE_FROM_QUEUE } from "../graphql/mutation";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   avatar: { width: 44, height: 44 },
   text: { textOverflow: "ellipsis", overflow: "hidden" },
   container: {
@@ -17,30 +19,26 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: "50px auto 50px",
     gridGap: 12,
     alignItems: "center",
-    marginTop: 10
+    marginTop: 10,
   },
   songInfoContainer: {
     overflow: "hidden",
-    whiteSpace: "nowrap"
-  }
+    whiteSpace: "nowrap",
+  },
 }));
-function QueuedSongList() {
-  const greatherThanMedium = useMediaQuery(theme => theme.breakpoints.up("md"));
-  const song = {
-    title: "kabira",
-    artist: "Kiani Usman",
-    thumbnail:
-      "https://i1.sndcdn.com/artworks-000056475023-059bpr-t500x500.jpg",
-    url: "https://soundcloud.com/kiani-usman-jarry/kabira"
-  };
+function QueuedSongList({ queue }) {
+  console.log(queue);
+  const greatherThanMedium = useMediaQuery((theme) =>
+    theme.breakpoints.up("md")
+  );
 
   return (
     greatherThanMedium && (
       <div style={{ margin: "10px 0" }}>
         <Typography variant="button" color="textSecondary">
-          Queue(5)
+          Queue({queue.length})
         </Typography>
-        {Array.from({ length: 5 }, () => song).map((song, index) => (
+        {queue.map((song, index) => (
           <QueuedSong key={index} song={song} />
         ))}
       </div>
@@ -51,6 +49,17 @@ function QueuedSongList() {
 function QueuedSong({ song }) {
   const classes = useStyles();
   const { title, artist, thumbnail } = song;
+  const [addOrRemoveFromQueue] = useMutation(ADD_OR_REMOVE_FROM_QUEUE, {
+    onCompleted: (data) => {
+      localStorage.setItem("queue", JSON.stringify(data.addOrRemoveFromQueue));
+    },
+  });
+
+  function handleAddorRemoveFromQueue() {
+    addOrRemoveFromQueue({
+      variables: { input: { ...song, __typename: "Song" } },
+    });
+  }
   return (
     <div className={classes.container}>
       <Avatar className={classes.avatar} src={thumbnail} alt="Song thumbnail" />
@@ -66,7 +75,7 @@ function QueuedSong({ song }) {
           {artist}
         </Typography>
       </div>
-      <IconButton>
+      <IconButton onClick={handleAddorRemoveFromQueue}>
         {" "}
         <Delete color="error" />
       </IconButton>

@@ -12,3 +12,17 @@ export const GET_SONGS = gql`
     }
   }
 `;
+
+//query from local cache apollo
+export const GET_QUEUED_SONGS = gql`
+  query getQueuedSongs {
+    queue @client {
+      id
+      duration
+      title
+      artist
+      thumbnail
+      url
+    }
+  }
+`;
