@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     flex: "1 0 auto",
   },
   thumbnail: {
-    width: 150,
+    width: "40%",
   },
   controls: {
     display: "flex",
@@ -130,7 +130,9 @@ function SongPlayer() {
           </div>
           <Slider
             onMouseDown={handleSeekingStart}
+            onTouchStart={handleSeekingStart}
             onMouseUp={handleSeekingEnd}
+            onTouchEnd={handleSeekingEnd}
             onChange={handleProgressChange}
             value={played}
             type="range"
