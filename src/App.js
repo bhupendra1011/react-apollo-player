@@ -8,13 +8,12 @@ import songReducer from "./reducer";
 
 export const SongContext = React.createContext({
   song: {
-    id: "472a6d6a-a665-4804-9dd6-583ff31690ba",
-    title: "kabira",
-    artist: "Kiani Usman",
-    thumbnail:
-      "https://i1.sndcdn.com/artworks-000056475023-059bpr-t500x500.jpg",
-    duration: 150,
-    url: "https://soundcloud.com/kiani-usman-jarry/kabira",
+    id: "2ef0fe8b-ed29-4012-bfa9-eaa58fa040da",
+    title: "Kaisi Hai Ye Rutki - Dil Chahta Hai",
+    artist: "Srinivas",
+    thumbnail: "http://img.youtube.com/vi/XBr11cQDg-E/0.jpg",
+    duration: 284,
+    url: "https://www.youtube.com/watch?v=XBr11cQDg-E",
   },
   isPlaying: false,
 });
